@@ -32,13 +32,10 @@ def main(cfg, gpu, save_dir):
     loss_cfg, optim_cfg, sched_cfg = cfg['LOSS'], cfg['OPTIMIZER'], cfg['SCHEDULER']
     epochs, lr = train_cfg['EPOCHS'], optim_cfg['LR']
     
-    traintransform = get_train_augmentation(train_cfg['IMAGE_SIZE'], seg_fill=dataset_cfg['IGNORE_LABEL'])
-    valtransform = get_val_augmentation(eval_cfg['IMAGE_SIZE'])
-
-    trainset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], 'train', traintransform)
-    valset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], 'val', valtransform)
+    trainset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], dataset_cfg['TRAIN_SET'],  dataset_cfg['NUM_CLASSES'])
+    valset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], dataset_cfg['VAL_SET'],  dataset_cfg['NUM_CLASSES'])
     
-    model = eval(model_cfg['NAME'])(model_cfg['BACKBONE'], trainset.n_classes)
+    model = eval(model_cfg['NAME'])(model_cfg['BACKBONE'], torch.FloatTensor(trainset.n_classes))
     model.init_pretrained(model_cfg['PRETRAINED'])
     model = model.to(device)
 
@@ -53,7 +50,7 @@ def main(cfg, gpu, save_dir):
 
     iters_per_epoch = len(trainset) // train_cfg['BATCH_SIZE']
     # class_weights = trainset.class_weights.to(device)
-    loss_fn = get_loss(loss_cfg['NAME'], trainset.ignore_label, None)
+    loss_fn = get_loss(loss_cfg['NAME'], trainset.ignore_label, trainset.class_weights)
     optimizer = get_optimizer(model, optim_cfg['NAME'], lr, optim_cfg['WEIGHT_DECAY'])
     scheduler = get_scheduler(sched_cfg['NAME'], optimizer, epochs * iters_per_epoch, sched_cfg['POWER'], iters_per_epoch * sched_cfg['WARMUP'], sched_cfg['WARMUP_RATIO'])
     scaler = GradScaler(enabled=train_cfg['AMP'])
