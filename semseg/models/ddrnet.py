@@ -153,6 +153,7 @@ class SegHead(nn.Module):
 class DDRNet(nn.Module):
     def __init__(self, backbone: str = None, num_classes: int = 19) -> None:
         super().__init__()
+        print('classes ', num_classes)
         planes, spp_planes, head_planes = [32, 64, 128, 256, 512], 128, 64
 
         self.conv1 = Stem(3, planes[0])
@@ -174,6 +175,7 @@ class DDRNet(nn.Module):
         self.down4 = Conv2BN(planes[1], planes[2], planes[3], 3, 2, 1)
 
         self.spp = DAPPM(planes[-1], spp_planes, planes[2])
+        print(planes[1], head_planes)
         self.seghead_extra = SegHead(planes[1], head_planes, num_classes, 8)
         self.final_layer = SegHead(planes[2], head_planes, num_classes, 8)
 

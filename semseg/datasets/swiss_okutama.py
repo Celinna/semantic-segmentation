@@ -28,7 +28,7 @@ class SwissOkutama(Dataset):
         self.std = [0.1179, 0.1003, 0.1139]
         self.root = root
         self.list_path = list_path
-        self.num_classes = num_classes
+        self.n_classes = num_classes
        
         if not inference:
             self.img_list = [line.strip().split() for line in open(list_path)]
@@ -117,8 +117,7 @@ class SwissOkutama(Dataset):
         label = self.convert_label(label)
         label = self.label_transform(label)
 
-
-        return image.copy(), label.copy()
+        return torch.from_numpy(image), torch.from_numpy(label).long()
         
 
     def category2mask(self, img):

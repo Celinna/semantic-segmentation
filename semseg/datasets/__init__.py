@@ -16,7 +16,7 @@ from .lapa import LaPa
 from .ibugmask import iBugMask
 from .celebamaskhq import CelebAMaskHQ
 from .facesynthetics import FaceSynthetics
-
+from .swiss_okutama import SwissOkutama
 
 __all__ = [
     'CamVid',
@@ -38,4 +38,5 @@ __all__ = [
     'iBugMask',
     'CelebAMaskHQ',
     'FaceSynthetics',
+    'SwissOkutama',
 ]
