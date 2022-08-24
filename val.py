@@ -73,8 +73,10 @@ def main(cfg):
     device = torch.device(cfg['DEVICE'])
 
     eval_cfg = cfg['EVAL']
-    transform = get_val_augmentation(eval_cfg['IMAGE_SIZE'])
-    dataset = eval(cfg['DATASET']['NAME'])(cfg['DATASET']['ROOT'], 'val', transform)
+    dataset_cfg = cfg['DATASET']
+    # transform = get_val_augmentation(eval_cfg['IMAGE_SIZE'])
+    # dataset = eval(cfg['DATASET']['NAME'])(cfg['DATASET']['ROOT'], 'val', transform)
+    dataset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], dataset_cfg['TEST_SET'],  dataset_cfg['NUM_CLASSES'])
     dataloader = DataLoader(dataset, 1, num_workers=1, pin_memory=True)
 
     model_path = Path(eval_cfg['MODEL_PATH'])
