@@ -2,6 +2,7 @@ import torch
 import argparse
 import yaml
 import math
+import os
 from pathlib import Path
 from tqdm import tqdm
 from tabulate import tabulate
@@ -79,8 +80,8 @@ def main(cfg):
     dataset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], dataset_cfg['TEST_SET'],  dataset_cfg['NUM_CLASSES'])
     dataloader = DataLoader(dataset, 1, num_workers=1, pin_memory=True)
 
-    model_path = Path(eval_cfg['MODEL_PATH'])
-    if not model_path.exists(): model_path = Path(cfg['SAVE_DIR']) / f"{cfg['MODEL']['NAME']}_{cfg['MODEL']['BACKBONE']}_{cfg['DATASET']['NAME']}.pth"
+    model_path = Path(os.path.join(cfg['SAVE_DIR'], eval_cfg['MODEL_PATH']))
+    # if not model_path.exists(): model_path = Path(cfg['SAVE_DIR']) / f"{cfg['MODEL']['NAME']}_{cfg['MODEL']['BACKBONE']}_{cfg['DATASET']['NAME']}.pth"
     print(f"Evaluating {model_path}...")
 
     model = eval(cfg['MODEL']['NAME'])(cfg['MODEL']['BACKBONE'], dataset.n_classes)
