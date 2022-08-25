@@ -48,7 +48,7 @@ class SwissOkutama(Dataset):
                               7: 6, 8: 7, 
                               9: self.ignore_label}
         
-           
+        self.CLASSES  = ["Outdoor structures", "Buildings", "Paved ground", "Non-paved ground", "Train tracks", "Plants", "Wheeled vehicles", "Water"]           
         self.colormap = {
                         # in RGB order
                         "Background": [0, 0, 0], 

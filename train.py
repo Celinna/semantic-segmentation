@@ -25,7 +25,8 @@ from val import evaluate
 def main(cfg, gpu, save_dir):
     start = time.time()
     best_mIoU = 0.0
-    num_workers = mp.cpu_count()
+#    num_workers = mp.cpu_count()
+    num_workers = 0
     device = torch.device(cfg['DEVICE'])
     train_cfg, eval_cfg = cfg['TRAIN'], cfg['EVAL']
     dataset_cfg, model_cfg = cfg['DATASET'], cfg['MODEL']
@@ -112,6 +113,7 @@ def main(cfg, gpu, save_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', type=str, default='configs/custom.yaml', help='Configuration file to use')
+#    parser.add_argument("--local_rank", type=int, default=-1)  
     args = parser.parse_args()
 
     with open(args.cfg) as f:
