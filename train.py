@@ -25,8 +25,8 @@ from val import evaluate
 def main(cfg, gpu, save_dir):
     start = time.time()
     best_mIoU = 0.0
-#    num_workers = mp.cpu_count()
-    num_workers = 0
+ #   num_workers = mp.cpu_count()
+    num_workers = 1
     device = torch.device(cfg['DEVICE'])
     train_cfg, eval_cfg = cfg['TRAIN'], cfg['EVAL']
     dataset_cfg, model_cfg = cfg['DATASET'], cfg['MODEL']
@@ -35,8 +35,9 @@ def main(cfg, gpu, save_dir):
     
     trainset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], dataset_cfg['TRAIN_SET'],  dataset_cfg['NUM_CLASSES'])
     valset = eval(dataset_cfg['NAME'])(dataset_cfg['ROOT'], dataset_cfg['VAL_SET'],  dataset_cfg['NUM_CLASSES'])
-    
-    model = eval(model_cfg['NAME'])(model_cfg['BACKBONE'], trainset.n_classes)
+ 
+    model = eval(model_cfg['NAME'])(trainset.n_classes)    
+#    model = eval(model_cfg['NAME'])(model_cfg['BACKBONE'], trainset.n_classes)
    # model.init_pretrained(model_cfg['PRETRAINED'])
     model = model.to(device)
 

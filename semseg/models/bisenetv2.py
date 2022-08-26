@@ -284,10 +284,10 @@ class SegmentHead(nn.Module):
         return feat
 
 
-class BiSeNetV2(nn.Module):
+class BiSeNetv2(nn.Module):
 
     def __init__(self, num_classes):
-        super(BiSeNetV2, self).__init__()
+        super(BiSeNetv2, self).__init__()
         self.detail = DetailBranch()
         self.segment = SegmentBranch()
         self.bga = BGALayer()
@@ -329,5 +329,5 @@ class BiSeNetV2(nn.Module):
 
 """print layers and params of network"""
 if __name__ == '__main__':
-    model = BiSeNetV2(num_classes=3)
+    model = BiSeNetv2(num_classes=3)
     summary(model, (3, 512, 512), device="cpu")
