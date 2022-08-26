@@ -17,6 +17,7 @@ from semseg.utils.utils import setup_cudnn
 
 @torch.no_grad()
 def evaluate(model, dataloader, device):
+    
     print('Evaluating...')
     model.eval()
     metrics = Metrics(dataloader.dataset.n_classes, dataloader.dataset.ignore_label, device)
@@ -24,7 +25,8 @@ def evaluate(model, dataloader, device):
     for images, labels in tqdm(dataloader):
         images = images.to(device)
         labels = labels.to(device)
-        preds = model(images).softmax(dim=1)
+        # preds = model(images).softmax(dim=1)
+        preds = model(images)[0].softmax(dim=1)
         metrics.update(preds, labels)
     
     ious, miou = metrics.compute_iou()
