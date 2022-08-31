@@ -1,10 +1,10 @@
 DEVICE          : cuda              # device used for training and evaluation (cpu, cuda, cuda0, cuda1, ...)
-SAVE_DIR        : '/scratch/izar/yju/bisegnet'         # output folder name used for saving the model, logs and inference results
+SAVE_DIR        : '/scratch/izar/yju/ddrnet'         # output folder name used for saving the model, logs and inference results
 
 MODEL:                                    
-  NAME          : BiSeNetv2                                           # name of the model you are using
-  BACKBONE      : ResNet-18                                                 # model variant
-  PRETRAINED    : ''              # backbone model's weight 
+  NAME          : DDRNet                                           # name of the model you are using
+  BACKBONE      : DDRNet-23slim                                                 # model variant
+  PRETRAINED    : 'checkpoints/backbones/ddrnet/DDRNet23s_imagenet.pth'              # backbone model's weight 
 
 DATASET:
   NAME          : SwissOkutama                                          # dataset name to be trained with (camvid, cityscapes, ade20k)
@@ -28,9 +28,9 @@ LOSS:
   CLS_WEIGHTS   : true            # use class weights in loss calculation
 
 OPTIMIZER:
-  NAME          : sgd           # optimizer name
-  LR            : 0.01           # initial learning rate used in optimizer
-  WEIGHT_DECAY  : 0.0005            # decay rate used in optimizer 
+  NAME          : adamw           # optimizer name
+  LR            : 0.001           # initial learning rate used in optimizer
+  WEIGHT_DECAY  : 0.01            # decay rate used in optimizer 
 
 SCHEDULER:
   NAME          : warmuppolylr    # scheduler name
@@ -40,7 +40,7 @@ SCHEDULER:
   
 
 EVAL:
-  MODEL_PATH    : 'BiSeNetv2_ResNet-18_SwissOkutama.pth'     # trained model file path
+  MODEL_PATH    : 'output_08_23/DDRNet_DDRNet-23slim_SwissOkutama.pth'     # trained model file path
   IMAGE_SIZE    : [1080, 1920]                           # evaluation image size in (h, w)                       
   MSF: 
     ENABLE      : false                                   # multi-scale and flip evaluation  
@@ -49,7 +49,7 @@ EVAL:
 
 
 TEST:
-  MODEL_PATH    : 'BiSeNetv2_ResNet-18_SwissOkutama.pth'     # trained model file path
+  MODEL_PATH    : 'output_08_23/DDRNet_DDRNet-23slim_SwissOkutama.pth'     # trained model file path
   FILE          : '/work/vita/datasets/Okutama-Swiss-dataset'                    # filename or foldername 
   IMAGE_SIZE    : [1080, 1920]                            # inference image size in (h, w)
   OVERLAY       : false                                    # save the overlay result (image_alpha+label_alpha)
