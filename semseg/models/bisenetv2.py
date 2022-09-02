@@ -5,7 +5,7 @@ Reference from: https://github.com/CoinCheung/BiSeNet
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchsummary import summary
+# from torchsummary import summary
 
 
 class ConvBNReLU(nn.Module):
@@ -330,4 +330,4 @@ class BiSeNetv2(nn.Module):
 """print layers and params of network"""
 if __name__ == '__main__':
     model = BiSeNetv2(num_classes=3)
-    summary(model, (3, 512, 512), device="cpu")
+    # summary(model, (3, 512, 512), device="cpu")

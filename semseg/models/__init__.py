@@ -5,6 +5,7 @@ from .sfnet import SFNet
 from .bisenetv1 import BiSeNetv1
 from .bisenetv2 import BiSeNetv2
 from .lawin import Lawin
+from.ddrnet_39 import DDRNet39
 
 
 __all__ = [
@@ -16,5 +17,6 @@ __all__ = [
     # Standalone Models
     'DDRNet', 
     'FCHarDNet', 
-    'BiSeNetv2'
+    'BiSeNetv2',
+    'DDRNet39'
 ]
