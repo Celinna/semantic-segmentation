@@ -421,8 +421,8 @@ class DualResNet(nn.Module):
         else:
             return x_      
 
-def DDRNet39(pretrained=True, num_classes=8):
-    model = DualResNet(BasicBlock, [3, 4, 6, 3], num_classes=num_classes, planes=64, spp_planes=128, head_planes=256, augment=False)
+def DDRNet39Att(pretrained=False, num_classes=8):
+    model = DualResNet(BasicBlock_Attention, [3, 4, 6, 3], num_classes=num_classes, planes=64, spp_planes=128, head_planes=256, augment=False)
     if pretrained:
         checkpoint = torch.load('C:/Users/Celinna/Desktop/semantic-segmentation/pretrained/DDRNet39_imagenet.pth', map_location='cpu')
         '''       
@@ -439,5 +439,5 @@ def DDRNet39(pretrained=True, num_classes=8):
 
 def get_seg_model(num_classes):
 
-    model = DDRNet39(pretrained=False, num_classes=num_classes)
+    model = DDRNet39Att(pretrained=False, num_classes=num_classes)
     return model
