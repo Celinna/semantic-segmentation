@@ -16,6 +16,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
 from collections import OrderedDict
+# from torchsummary import summary
 
 # BatchNorm2d = nn.SyncBatchNorm
 BatchNorm2d = nn.BatchNorm2d
@@ -30,7 +31,7 @@ def conv3x3(in_planes, out_planes, stride=1):
 
 class BasicBlock_Attention(nn.Module):	
     expansion = 1	
-    def __init__(self, inplanes, planes, stride=1, downsample=None, no_relu=False):	
+    def __init__(self, inplanes, planes, stride=1, downsample=None, no_relu=False):	 
         super(BasicBlock_Attention, self).__init__()	
         self.conv1 = conv3x3(inplanes, planes, stride)	
         self.bn1 = nn.BatchNorm2d(planes, momentum=bn_mom)	
@@ -38,35 +39,49 @@ class BasicBlock_Attention(nn.Module):
         self.conv2 = conv3x3(planes, planes)	
         self.bn2 = nn.BatchNorm2d(planes, momentum=bn_mom)	
         self.downsample = downsample	
+        
         self.att1 = nn.Sequential(	
             nn.Conv2d(inplanes, int(planes/8), 1, 1, bias=False),	
             nn.BatchNorm2d(int(planes/8)),	
             nn.ReLU(inplace=True),	
         )	
-        self.att2 = conv3x3(int(planes/8), int(planes/8), 1)	
+        self.att2 = conv3x3(int(planes/8), int(planes/8), stride)	
         self.att_bn1 = nn.BatchNorm2d(int(planes/8), momentum=bn_mom)	
         self.att3 = nn.Conv2d(int(planes/8), planes, 1, 1, bias=False)	
         self.att_bn2 = nn.BatchNorm2d(planes, momentum=bn_mom)	
         self.att_downsample = downsample	
+        self.stride = stride
+        self.no_relu = no_relu
         
     def forward(self, x):	
         residual = x	
         att = self.att1(x)	
-        att = self.att2(att)	
-        att = self.att_bn1(att)	
-        att = self.relu(att)	
-        att = self.att3(att)	
+
+        att = self.att2(att)
+
+        att = self.att_bn1(att)
+        att = self.relu(att)
+        att = self.att3(att)
+
         att = self.att_bn2(att)	
+
+        
         out = self.conv1(x)	
         out = self.bn1(out)	
-        out = self.relu(out)	
-        out = self.conv2(out)	
-        out = self.bn2(out)	
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+   
+        
         if self.downsample is not None:	
             residual = self.downsample(x)	
-            att = self.att_downsample(att)	
+        
+        #   att = self.att_downsample(att)	
+        # print('att_out' , att.shape)
+            
         out = out + att	
         out = out + residual	
+        
         out = self.relu(out)	
         
         if self.no_relu:
@@ -260,7 +275,7 @@ class segmenthead(nn.Module):
 
 class DualResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=19, planes=64, spp_planes=128, head_planes=128, augment=False):
+    def __init__(self, block, layers, num_classes=8, planes=64, spp_planes=128, head_planes=128, augment=False):
         super(DualResNet, self).__init__()
 
         highres_planes = planes * 2
@@ -369,24 +384,31 @@ class DualResNet(nn.Module):
         layers = []
 
         x = self.conv1(x)
-
+    
         x = self.layer1(x)
+        
         layers.append(x)
 
-        x = self.layer2(self.relu(x))
-        layers.append(x)
   
-        x = self.layer3_1(self.relu(x))
+        x = self.layer2(self.relu(x))
+        
         layers.append(x)
+   
+        x = self.layer3_1(self.relu(x))
+        
+        layers.append(x)
+
         x_ = self.layer3_1_(self.relu(layers[1]))
         x = x + self.down3_1(self.relu(x_))
         x_ = x_ + F.interpolate(
                         self.compression3_1(self.relu(layers[2])),
                         size=[height_output, width_output],
                         mode='bilinear')
-
+  
         x = self.layer3_2(self.relu(x))
+        
         layers.append(x)
+
         x_ = self.layer3_2_(self.relu(x_))
         x = x + self.down3_2(self.relu(x_))
         x_ = x_ + F.interpolate(
@@ -395,8 +417,8 @@ class DualResNet(nn.Module):
                         mode='bilinear')
 
         temp = x_
-
         x = self.layer4(self.relu(x))
+        
         layers.append(x)
         x_ = self.layer4_(self.relu(x_))
         x = x + self.down4(self.relu(x_))
@@ -406,12 +428,14 @@ class DualResNet(nn.Module):
                         mode='bilinear')
 
         x_ = self.layer5_(self.relu(x_))
+        
         x = F.interpolate(
                         self.spp(self.layer5(self.relu(x))),
                         size=[height_output, width_output],
                         mode='bilinear')
 
         x_ = self.final_layer(x + x_)
+        
 
         x_ = F.interpolate(x_, size=[H, W], mode='bilinear')
 
@@ -440,4 +464,10 @@ def DDRNet39Att(pretrained=False, num_classes=8):
 def get_seg_model(num_classes):
 
     model = DDRNet39Att(pretrained=False, num_classes=num_classes)
+
     return model
+
+if __name__ == '__main__':
+    model = DDRNet39Att(pretrained=False, num_classes=8)
+    
+    # summary(model, (3, 768, 1080), device="cpu")
