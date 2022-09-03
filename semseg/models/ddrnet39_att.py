@@ -28,6 +28,52 @@ def conv3x3(in_planes, out_planes, stride=1):
                      padding=1, bias=False)
 
 
+class BasicBlock_Attention(nn.Module):	
+    expansion = 1	
+    def __init__(self, inplanes, planes, stride=1, downsample=None, no_relu=False):	
+        super(BasicBlock_Attention, self).__init__()	
+        self.conv1 = conv3x3(inplanes, planes, stride)	
+        self.bn1 = nn.BatchNorm2d(planes, momentum=bn_mom)	
+        self.relu = nn.ReLU(inplace=True)	
+        self.conv2 = conv3x3(planes, planes)	
+        self.bn2 = nn.BatchNorm2d(planes, momentum=bn_mom)	
+        self.downsample = downsample	
+        self.att1 = nn.Sequential(	
+            nn.Conv2d(inplanes, int(planes/8), 1, 1, bias=False),	
+            nn.BatchNorm2d(int(planes/8)),	
+            nn.ReLU(inplace=True),	
+        )	
+        self.att2 = conv3x3(int(planes/8), int(planes/8), 1)	
+        self.att_bn1 = nn.BatchNorm2d(int(planes/8), momentum=bn_mom)	
+        self.att3 = nn.Conv2d(int(planes/8), planes, 1, 1, bias=False)	
+        self.att_bn2 = nn.BatchNorm2d(planes, momentum=bn_mom)	
+        self.att_downsample = downsample	
+        
+    def forward(self, x):	
+        residual = x	
+        att = self.att1(x)	
+        att = self.att2(att)	
+        att = self.att_bn1(att)	
+        att = self.relu(att)	
+        att = self.att3(att)	
+        att = self.att_bn2(att)	
+        out = self.conv1(x)	
+        out = self.bn1(out)	
+        out = self.relu(out)	
+        out = self.conv2(out)	
+        out = self.bn2(out)	
+        if self.downsample is not None:	
+            residual = self.downsample(x)	
+            att = self.att_downsample(att)	
+        out = out + att	
+        out = out + residual	
+        out = self.relu(out)	
+        
+        if self.no_relu:
+            return out
+        else:
+            return self.relu(out)
+    
 class BasicBlock(nn.Module):
     expansion = 1
 
