@@ -5,7 +5,7 @@ from .sfnet import SFNet
 from .bisenetv1 import BiSeNetv1
 from .bisenetv2 import BiSeNetv2
 from .lawin import Lawin
-from.ddrnet_39 import DDRNet39
+from.ddrnet39 import DDRNet39
 
 
 __all__ = [
