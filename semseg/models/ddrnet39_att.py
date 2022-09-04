@@ -17,6 +17,7 @@ import torch.nn.functional as F
 from torch.nn import init
 from collections import OrderedDict
 # from torchsummary import summary
+torch.autograd.set_detect_anomaly(True)
 
 # BatchNorm2d = nn.SyncBatchNorm
 BatchNorm2d = nn.BatchNorm2d
@@ -56,16 +57,12 @@ class BasicBlock_Attention(nn.Module):
     def forward(self, x):	
         residual = x	
         att = self.att1(x)	
-
         att = self.att2(att)
-
         att = self.att_bn1(att)
         att = self.relu(att)
         att = self.att3(att)
-
         att = self.att_bn2(att)	
-
-        
+       
         out = self.conv1(x)	
         out = self.bn1(out)	
         out = self.relu(out)
@@ -75,14 +72,10 @@ class BasicBlock_Attention(nn.Module):
         
         if self.downsample is not None:	
             residual = self.downsample(x)	
-        
-        #   att = self.att_downsample(att)	
-        # print('att_out' , att.shape)
+         #   att = self.att_downsample(att)	
             
-        out = out + att	
-        out = out + residual	
-        
-        out = self.relu(out)	
+        out += att	
+        out += residual		
         
         if self.no_relu:
             return out
@@ -447,17 +440,7 @@ class DualResNet(nn.Module):
 
 def DDRNet39Att(pretrained=False, num_classes=8):
     model = DualResNet(BasicBlock_Attention, [3, 4, 6, 3], num_classes=num_classes, planes=64, spp_planes=128, head_planes=256, augment=False)
-    if pretrained:
-        checkpoint = torch.load('C:/Users/Celinna/Desktop/semantic-segmentation/pretrained/DDRNet39_imagenet.pth', map_location='cpu')
-        '''       
-        new_state_dict = OrderedDict()
-        for k, v in checkpoint['state_dict'].items():
-            name = k[7:]  
-            new_state_dict[name] = v
-        #model_dict.update(new_state_dict)
-        #model.load_state_dict(model_dict)
-        '''
-        model.load_state_dict(checkpoint, strict = False)
+
     return model
 
 

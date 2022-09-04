@@ -25,8 +25,8 @@ def evaluate(model, dataloader, device):
     for images, labels in tqdm(dataloader):
         images = images.to(device)
         labels = labels.to(device)
-        # preds = model(images).softmax(dim=1)
-        preds = model(images)[0].softmax(dim=1)
+        preds = model(images).softmax(dim=1)
+      #  preds = model(images)[0].softmax(dim=1)
         metrics.update(preds, labels)
     
     ious, miou = metrics.compute_iou()
@@ -87,6 +87,7 @@ def main(cfg):
     print(f"Evaluating {model_path}...")
 
     model = eval(cfg['MODEL']['NAME'])(cfg['MODEL']['BACKBONE'], dataset.n_classes)
+   # model = eval(cfg['MODEL']['NAME'])(dataset.n_classes)
     model.load_state_dict(torch.load(str(model_path), map_location='cpu'))
     model = model.to(device)
 

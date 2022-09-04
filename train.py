@@ -48,7 +48,7 @@ def main(cfg, gpu, save_dir):
         sampler = RandomSampler(trainset)
     
     trainloader = DataLoader(trainset, batch_size=train_cfg['BATCH_SIZE'], num_workers=num_workers, drop_last=True, pin_memory=True, sampler=sampler)
-    valloader = DataLoader(valset, batch_size=1, num_workers=1, pin_memory=True)
+    valloader = DataLoader(valset, batch_size=1, num_workers=num_workers, pin_memory=True)
 
     iters_per_epoch = len(trainset) // train_cfg['BATCH_SIZE']
     class_weights = trainset.class_weights.to(device)
@@ -114,7 +114,7 @@ def main(cfg, gpu, save_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', type=str, default='configs/custom.yaml', help='Configuration file to use')
-#    parser.add_argument("--local_rank", type=int, default=-1)  
+    parser.add_argument("--local_rank", type=int, default=-1)  
     args = parser.parse_args()
 
     with open(args.cfg) as f:
