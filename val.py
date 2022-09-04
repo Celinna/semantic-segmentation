@@ -25,7 +25,17 @@ def evaluate(model, dataloader, device):
     for images, labels in tqdm(dataloader):
         images = images.to(device)
         labels = labels.to(device)
+        
+        size = labels.size()
+        
         preds = model(images).softmax(dim=1)
+        print(images.shape, preds.shape)
+        if preds.size()[-2] != size[-2] or preds.size()[-1] != size[-1]:
+            preds = F.interpolate(
+                preds, size[-2:],
+                mode='bilinear', align_corners=False
+            )
+            
       #  preds = model(images)[0].softmax(dim=1)
         metrics.update(preds, labels)
     
