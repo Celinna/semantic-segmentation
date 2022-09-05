@@ -108,6 +108,7 @@ class SwissOkutama(Dataset):
         
         image = cv2.imread(os.path.join(self.root, item["img"]),
                            cv2.IMREAD_COLOR)
+        image = cv2.resize(image, (640, 480), interpolation=cv2.INTER_CUBIC)
         size = image.shape
         image = self.input_transform(image)
         image = image.transpose((2, 0, 1))
