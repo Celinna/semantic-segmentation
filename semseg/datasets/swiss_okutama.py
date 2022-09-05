@@ -93,8 +93,9 @@ class SwissOkutama(Dataset):
     def label_transform(self, label):
         return np.array(label).astype('int32')
     
+    
     def multi_scale_aug(self, image, label=None,
-                        rand_scale=1, rand_crop=True):
+                        rand_scale=1):
         long_size = np.int(self.base_size * rand_scale + 0.5)
         h, w = image.shape[:2]
         if h > w:
@@ -112,10 +113,8 @@ class SwissOkutama(Dataset):
         else:
             return image
 
-        if rand_crop:
-            image, label = self.rand_crop(image, label)
-
         return image, label
+    
     
     def convert_label(self, label, inverse=False):
         temp = label.copy()
