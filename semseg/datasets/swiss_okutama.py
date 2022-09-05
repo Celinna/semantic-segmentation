@@ -14,6 +14,7 @@ import torch
 from torch.nn import functional as F
 from torch.utils.data import Dataset
 
+import random
 
 class SwissOkutama(Dataset):
     def __init__(self, 
@@ -39,7 +40,8 @@ class SwissOkutama(Dataset):
                                                     0.59038726, 0.50078311, 
                                                     17.07579971,  0.42550586,
                                                     7.51839971, 13.64782882]).cuda()    
-
+        self.scale_factor = 16
+        
         self.ignore_label = 255
         self.label_mapping = {0: self.ignore_label, 
                               1: 0, 2: 1, 
@@ -91,6 +93,30 @@ class SwissOkutama(Dataset):
     def label_transform(self, label):
         return np.array(label).astype('int32')
     
+    def multi_scale_aug(self, image, label=None,
+                        rand_scale=1, rand_crop=True):
+        long_size = np.int(self.base_size * rand_scale + 0.5)
+        h, w = image.shape[:2]
+        if h > w:
+            new_h = long_size
+            new_w = np.int(w * long_size / h + 0.5)
+        else:
+            new_w = long_size
+            new_h = np.int(h * long_size / w + 0.5)
+
+        image = cv2.resize(image, (new_w, new_h),
+                           interpolation=cv2.INTER_LINEAR)
+        if label is not None:
+            label = cv2.resize(label, (new_w, new_h),
+                               interpolation=cv2.INTER_NEAREST)
+        else:
+            return image
+
+        if rand_crop:
+            image, label = self.rand_crop(image, label)
+
+        return image, label
+    
     def convert_label(self, label, inverse=False):
         temp = label.copy()
         if inverse:
@@ -108,13 +134,20 @@ class SwissOkutama(Dataset):
         
         image = cv2.imread(os.path.join(self.root, item["img"]),
                            cv2.IMREAD_COLOR)
-        image = cv2.resize(image, (640, 480), interpolation=cv2.INTER_CUBIC)
+        label = cv2.imread(os.path.join(self.root, item["label"]),
+                           cv2.IMREAD_GRAYSCALE)
+        
+        # image = cv2.resize(image, (640, 480), interpolation=cv2.INTER_CUBIC)
+        
+        rand_scale = 0.5 + random.randint(0, self.scale_factor) / 10.0
+        image, label = self.multi_scale_aug(image, label,
+                                            rand_scale=rand_scale)
+            
         size = image.shape
         image = self.input_transform(image)
         image = image.transpose((2, 0, 1))
 
-        label = cv2.imread(os.path.join(self.root, item["label"]),
-                           cv2.IMREAD_GRAYSCALE)
+        
         label = self.convert_label(label)
         label = self.label_transform(label)
 
