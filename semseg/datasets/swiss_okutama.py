@@ -96,8 +96,11 @@ class SwissOkutama(Dataset):
     
     def multi_scale_aug(self, image, label=None,
                         rand_scale=1):
-        long_size = np.int(self.base_size * rand_scale + 0.5)
+        
         h, w = image.shape[:2]
+        
+        long_size = np.int(w * rand_scale + 0.5)
+        
         if h > w:
             new_h = long_size
             new_w = np.int(w * long_size / h + 0.5)
