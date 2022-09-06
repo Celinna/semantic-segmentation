@@ -3,7 +3,7 @@ SAVE_DIR        : '/scratch/izar/yju/ddrnet39/fold2'         # output folder nam
 
 MODEL:                                    
   NAME          : DDRNet39                                           # name of the model you are using
-  BACKBONE      : '1080'                                                # model variant
+  BACKBONE      : 'multi'                                                # model variant
   PRETRAINED    : './pretrained/DDRNET39_imagenet.pth'              # backbone model's weight 
 
 DATASET:
@@ -17,11 +17,11 @@ DATASET:
 
 TRAIN:
   IMAGE_SIZE    : [1080, 1920]    # training image size in (h, w)
-  BATCH_SIZE    : 2               # batch size used to train
+  BATCH_SIZE    : 1               # batch size used to train
   EPOCHS        : 100             # number of epochs to train
   EVAL_INTERVAL : 10              # evaluation interval during training
   AMP           : false           # use AMP in training
-  DDP           : true           # use DDP training
+  DDP           : false           # use DDP training
 
 LOSS:
   NAME          : CrossEntropy          # loss function name (ohemce, ce, dice)
@@ -40,8 +40,8 @@ SCHEDULER:
   
 
 EVAL:
-  MODEL_PATH    : 'DDRNet39__SwissOkutama.pth'     # trained model file path
-  IMAGE_SIZE    : [1080, 1920]                           # evaluation image size in (h, w)                       
+  MODEL_PATH    : 'DDRNet39_1080_SwissOkutama.pth'     # trained model file path
+  IMAGE_SIZE    : [720, 1280]                           # evaluation image size in (h, w)                       
   MSF: 
     ENABLE      : false                                   # multi-scale and flip evaluation  
     FLIP        : true                                    # use flip in evaluation  

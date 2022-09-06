@@ -145,11 +145,10 @@ class SwissOkutama(Dataset):
         image, label = self.multi_scale_aug(image, label,
                                             rand_scale=rand_scale)
             
-        size = image.shape
         image = self.input_transform(image)
         image = image.transpose((2, 0, 1))
 
-        
+        print(image.shape, label.shape)        
         label = self.convert_label(label)
         label = self.label_transform(label)
 

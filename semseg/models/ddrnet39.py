@@ -386,17 +386,9 @@ class DualResNet(nn.Module):
             return x_      
 
 def DDRNet39(pretrained=True, num_classes=8):
-    model = DualResNet(BasicBlock, [3, 4, 6, 3], num_classes=num_classes, planes=64, spp_planes=128, head_planes=256, augment=False)
+    model = DualResNet(BasicBlock, [3, 4, 6, 3], size=[1080, 1920], num_classes=num_classes, planes=64, spp_planes=128, head_planes=256, augment=False)
     if pretrained:
         checkpoint = torch.load('/home/yju/semantic-segmentation/pretrained/DDRNet39_imagenet.pth', map_location='cpu')
-        '''       
-        new_state_dict = OrderedDict()
-        for k, v in checkpoint['state_dict'].items():
-            name = k[7:]  
-            new_state_dict[name] = v
-        #model_dict.update(new_state_dict)
-        #model.load_state_dict(model_dict)
-        '''
         model.load_state_dict(checkpoint, strict = False)
     return model
 
