@@ -3,7 +3,7 @@ SAVE_DIR        : '/scratch/izar/yju/ddrnet39Att/fold2'         # output folder 
 
 MODEL:                                    
   NAME          : DDRNet39Att                                           # name of the model you are using
-  BACKBONE      : '1080'                                                # model variant
+  BACKBONE      : 'adam'                                                # model variant
   PRETRAINED    : ''              # backbone model's weight 
 
 DATASET:
@@ -17,20 +17,20 @@ DATASET:
 
 TRAIN:
   IMAGE_SIZE    : [1080, 1920]    # training image size in (h, w)
-  BATCH_SIZE    : 6               # batch size used to train
-  EPOCHS        : 100             # number of epochs to train
+  BATCH_SIZE    : 8               # batch size used to train
+  EPOCHS        : 250             # number of epochs to train
   EVAL_INTERVAL : 10              # evaluation interval during training
   AMP           : false           # use AMP in training
-  DDP           : true           # use DDP training
+  DDP           : false           # use DDP training
 
 LOSS:
   NAME          : CrossEntropy          # loss function name (ohemce, ce, dice)
   CLS_WEIGHTS   : true            # use class weights in loss calculation
 
 OPTIMIZER:
-  NAME          : sgd           # optimizer name
-  LR            : 0.01           # initial learning rate used in optimizer
-  WEIGHT_DECAY  : 0.0005            # decay rate used in optimizer 
+  NAME          : adamw           # optimizer name
+  LR            : 0.001           # initial learning rate used in optimizer
+  WEIGHT_DECAY  : 0.01            # decay rate used in optimizer 
 
 SCHEDULER:
   NAME          : warmuppolylr    # scheduler name
@@ -40,7 +40,7 @@ SCHEDULER:
   
 
 EVAL:
-  MODEL_PATH    : 'DDRNet39__SwissOkutama.pth'     # trained model file path
+  MODEL_PATH    : 'DDRNet39Att_adam_SwissOkutama.pth'     # trained model file path
   IMAGE_SIZE    : [1080, 1920]                           # evaluation image size in (h, w)                       
   MSF: 
     ENABLE      : false                                   # multi-scale and flip evaluation  

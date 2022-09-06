@@ -16,21 +16,21 @@ DATASET:
   NUM_CLASSES   : 8
 
 TRAIN:
-  IMAGE_SIZE    : [768, 1080]    # training image size in (h, w)
-  BATCH_SIZE    : 8               # batch size used to train
+  IMAGE_SIZE    : [1080, 1920]    # training image size in (h, w)
+  BATCH_SIZE    : 3               # batch size used to train
   EPOCHS        : 100             # number of epochs to train
   EVAL_INTERVAL : 10              # evaluation interval during training
   AMP           : false           # use AMP in training
-  DDP           : false           # use DDP training
+  DDP           : true           # use DDP training
 
 LOSS:
   NAME          : CrossEntropy          # loss function name (ohemce, ce, dice)
   CLS_WEIGHTS   : true            # use class weights in loss calculation
 
 OPTIMIZER:
-  NAME          : adamw           # optimizer name
-  LR            : 0.001           # initial learning rate used in optimizer
-  WEIGHT_DECAY  : 0.01            # decay rate used in optimizer 
+  NAME          : sgd           # optimizer name
+  LR            : 0.01           # initial learning rate used in optimizer
+  WEIGHT_DECAY  : 0.0005            # decay rate used in optimizer 
 
 SCHEDULER:
   NAME          : warmuppolylr    # scheduler name
@@ -40,7 +40,7 @@ SCHEDULER:
   
 
 EVAL:
-  MODEL_PATH    : 'output_08_23/DDRNet_DDRNet-23slim_SwissOkutama.pth'     # trained model file path
+  MODEL_PATH    : 'DDRNet_DDRNet-23slim_SwissOkutama.pth'     # trained model file path
   IMAGE_SIZE    : [1080, 1920]                           # evaluation image size in (h, w)                       
   MSF: 
     ENABLE      : false                                   # multi-scale and flip evaluation  
