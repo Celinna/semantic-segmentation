@@ -214,11 +214,12 @@ class segmenthead(nn.Module):
 
 class DualResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=19, planes=64, spp_planes=128, head_planes=128, augment=False):
+    def __init__(self, block, layers, size, num_classes=19, planes=64, spp_planes=128, head_planes=128, augment=False):
         super(DualResNet, self).__init__()
 
         highres_planes = planes * 2
         self.augment = augment
+        self.size = size
 
         self.conv1 =  nn.Sequential(
                           nn.Conv2d(3,planes,kernel_size=3, stride=2, padding=1),
@@ -317,9 +318,14 @@ class DualResNet(nn.Module):
 
 
     def forward(self, x):
-        B, C, H, W = x.shape
-        width_output = x.shape[-1] // 8
-        height_output = x.shape[-2] // 8
+        # B, C, H, W = x.shape
+        # width_output = x.shape[-1] // 8
+        # height_output = x.shape[-2] // 8
+        W = self.size[1]
+        H = self.size[0]
+        width_output = W // 8
+        height_output = H // 8
+        
         layers = []
 
         x = self.conv1(x)
@@ -367,6 +373,7 @@ class DualResNet(nn.Module):
 
         x_ = self.final_layer(x + x_)
 
+        # x_ = F.interpolate(x_, size=[H, W], mode='bilinear')
         x_ = F.interpolate(x_, size=[H, W], mode='bilinear')
 
         if self.augment: 
